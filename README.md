@@ -1,1 +1,1 @@
-A git pre-commit hook script for finding either new or modified Sketch files and generating/adding zip files to be easily downloaded from GitHub.
+A git pre-commit hook script for finding either new or modified [Sketch](http://bohemiancoding.com/sketch/) files and generating/adding zip files to be easily downloaded from GitHub.
