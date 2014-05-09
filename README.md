@@ -1,2 +1,1 @@
-sketch-pre-commit-hook
-======================
+A git pre-commit hook script for finding either new or modified Sketch files and generating/adding zip files to be easily downloaded from GitHub.

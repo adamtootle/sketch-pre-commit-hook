@@ -1,0 +1,79 @@
+#!/bin/sh
+
+function containsSketchFile
+{
+  declare -a argAry1=("${!1}")
+  for file in "${argAry1[@]}"; do
+    if [ "$file" = "$2" ];
+    then
+      return 0
+    fi
+  done
+
+  return 1
+}
+
+function mkdirForZipIfNeeded
+{
+  arg="$1"
+  trimmed_arg="${arg%/*.sketch}"
+  if [ ! -d $trimmed_arg ];
+  then
+    mkdir -p $trimmed_arg
+  fi
+}
+
+IFS=';'
+
+files=`git status --porcelain | grep "A " | grep .sketch`
+files=${files//A  /;} # replaces "A  " with ;
+files=${files//A /;} # catches "A " in case that happens
+files=${files//\"/} # removes quotes around file names
+
+files_array=($files)
+
+array=()
+for file in "${files_array[@]}";
+do
+  trimmed_file=${file%/*}
+  if ! containsSketchFile array[@] $trimmed_file;
+  then
+    array+=($trimmed_file)
+  fi
+done
+
+files=`git status --porcelain | grep "M " | grep .sketch`
+files=${files//M  /;} # replaces "A  " with ;
+files=${files//M /;} # catches "M " in case that happens
+files=${files//\"/} # removes quotes around file names
+
+files_array=($files)
+
+for file in "${files_array[@]}";
+do
+  trimmed_file=${file%/*}
+  if ! containsSketchFile array[@] $trimmed_file;
+  then
+    array+=($trimmed_file)
+  fi
+done
+
+# echo "${array[@]}"
+
+array_length=${#array[@]}
+if ((array_length > 0))
+then
+  if [ ! -d "zip" ];
+  then
+    mkdir "zip"
+  fi
+  
+  for file in "${array[@]}";
+  do
+    mkdirForZipIfNeeded zip/${file}
+    zip -r "zip/${file}.zip" "./${file}"
+  done
+  git add zip
+fi
+
+exit 0

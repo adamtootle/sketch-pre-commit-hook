@@ -1,0 +1,23 @@
+#!/bin/sh
+
+
+read -r -p "Are you sure? This will overwrite any existing pre-commit hook you have setup. If you've never setup a hook then you should be good to go. [Y/n] " response
+response=$(echo $response | tr "[:upper:]" "[:lower:]") # tolower
+if [[ $response =~ ^(yes|y| ) ]];
+then
+  if [ -d '.git' ]
+  then
+    if [ -f '.git/hooks/pre-commit' ]
+    then
+      rm .git/hooks/pre-commit
+    fi
+
+    if [ -L '.git/hooks/pre-commit' ]
+    then
+      rm .git/hooks/pre-commit
+    fi
+
+    ln -s ../../pre-commit .git/hooks/pre-commit
+    chmod +x pre-commit
+  fi
+fi
